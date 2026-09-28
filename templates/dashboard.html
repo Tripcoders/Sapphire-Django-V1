@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% load static %}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sapphire — Insurance policies dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  colors: { sapphire:'#0033aa', accent:'#0091ff', ink:'#1a1d2c', muted:'#4e5468' },
+  fontFamily: { jakarta:['"Plus Jakarta Sans"','Inter','system-ui','sans-serif'] }
+}}};
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="font-jakarta bg-[#f9fafd] text-[#1a1d2c] antialiased">
+
+<!-- ================= Sidebar ================= -->
+<div class="nav-scrim" onclick="toggleNav(false)"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="side-logo">
+    <img class="logo-icon" src="{% static 'img/icon-sapphire.svg' %}" alt="Sapphire" />
+    <img class="logo-horiz" src="{% static 'img/sapphire-horiz-logo.svg' %}" alt="Sapphire" />
+  </div>
+  <nav class="side-nav">
+    <button class="side-item active" data-nav="dashboard"><i data-lucide="house" class="i22"></i><span class="nav-label">Dashboard</span><span class="tip">Dashboard</span></button>
+    <button class="side-item" data-nav="policies"><i data-lucide="files" class="i22"></i><span class="nav-label">Policies</span><span class="tip">Policies</span></button>
+    <button class="side-item" data-nav="clients"><i data-lucide="users" class="i22"></i><span class="nav-label">Clients</span><span class="tip">Clients</span></button>
+    <button class="side-item" data-nav="messages"><i data-lucide="message-square-text" class="i22"></i><span class="nav-label">Messages</span><span class="tip">Messages</span></button>
+  </nav>
+  <div class="side-sep"></div>
+  <nav class="side-nav" style="padding-top:16px">
+    <button class="side-item" data-nav="settings"><i data-lucide="settings" class="i22"></i><span class="nav-label">Settings</span><span class="tip">Settings</span></button>
+    <button class="side-item" data-nav="notifications"><i data-lucide="bell" class="i22"></i><span class="nav-label">Notifications</span><span class="tip">Notifications</span><span id="sideDot" class="absolute top-1/2 -translate-y-1/2 right-2 w-2 h-2 rounded-full bg-red-500"></span></button>
+    <button class="side-item" data-nav="help"><i data-lucide="circle-help" class="i22"></i><span class="nav-label">Help centre</span><span class="tip">Help centre</span></button>
+  </nav>
+  <div class="side-foot flex flex-col items-center gap-3">
+    <button onclick="openModal('agentChatModal')" class="side-item" data-nav="agent-chat" title="Agent chat">
+      <img src="{% static 'img/agent-image.png' %}" alt="Agent chat" class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-md" />
+      <span class="nav-label">Agent chat</span>
+      <span class="tip">Agent chat</span>
+    </button>
+    <a href="/design-system" class="side-item" style="min-height:36px;height:36px" title="Design system">
+      <i data-lucide="palette" class="w-5 h-5"></i>
+      <span class="nav-label">Design system</span>
+      <span class="tip">Design system</span>
+    </a>
+  </div>
+</aside>
+
+<!-- ================= Topbar ================= -->
+<header class="topbar">
+  <button class="icon-btn only-mobile" onclick="toggleNav()" title="Menu"><i data-lucide="menu" class="i20"></i></button>
+  <button class="icon-btn hide-mobile" onclick="toggleSidebar()" title="Toggle sidebar"><i data-lucide="menu" class="i20"></i></button>
+  <h1 class="t-title whitespace-nowrap" id="pageTitle">Insurance policies</h1>
+  <div class="top-search search-box hide-mobile" id="topSearchBox" style="width:400px;height:42px;margin-left:24px">
+    <i data-lucide="search" class="i18" style="color:#8a8d9f"></i>
+    <input id="topSearch" placeholder="Search for customers, quotes, or policies..." />
+  </div>
+  <div class="ml-auto flex items-center gap-2">
+    <button class="icon-btn only-mobile" onclick="toggleMobileSearch()" title="Search"><i data-lucide="search" class="i20"></i></button>
+    <div class="relative hide-mobile">
+      <button class="icon-btn" id="topFilterBtn" title="Quick filter"><i data-lucide="sliders-horizontal" class="i20"></i></button>
+      <div id="topFilterPop" class="dropdown hidden" style="right:0;top:44px">
+        <div class="dropdown-head"><div><p class="dropdown-heading">Filter by channel</p><p class="dropdown-sub">Show records from one source</p></div></div>
+        <div class="flex flex-col" data-channel-list>
+          <button class="dropdown-item active" data-channel="all"><span class="dropdown-ic"><i data-lucide="layout-grid" class="i16"></i></span><span class="dropdown-label">All channels</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+          <button class="dropdown-item" data-channel="Branch"><span class="dropdown-ic"><i data-lucide="building-2" class="i16"></i></span><span class="dropdown-label">Branch</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+          <button class="dropdown-item" data-channel="Website"><span class="dropdown-ic"><i data-lucide="globe" class="i16"></i></span><span class="dropdown-label">Website</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+          <button class="dropdown-item" data-channel="Referral"><span class="dropdown-ic"><i data-lucide="handshake" class="i16"></i></span><span class="dropdown-label">Referral</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+          <button class="dropdown-item" data-channel="Boomerang"><span class="dropdown-ic"><i data-lucide="message-circle" class="i16"></i></span><span class="dropdown-label">Boomerang</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+          <button class="dropdown-item" data-channel="SAP"><span class="dropdown-ic"><i data-lucide="database" class="i16"></i></span><span class="dropdown-label">SAP</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+          <button class="dropdown-item" data-channel="Social media"><span class="dropdown-ic"><i data-lucide="thumbs-up" class="i16"></i></span><span class="dropdown-label">Social media</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+        </div>
+      </div>
+    </div>
+    <button onclick="openModal('claimModal')" class="btn btn-outline btn-sm hide-mobile"><i data-lucide="plus" class="i16"></i> New claim</button>
+    <div class="relative">
+      <button class="icon-btn relative" id="bellBtn" title="Notifications"><i data-lucide="bell" class="i20"></i><span id="bellBadge" class="absolute w-4 h-4 text-white rounded-full flex items-center justify-center" style="background:#ef4444;font-size:10px;font-weight:700;top:2px;right:2px">3</span></button>
+      <div id="bellPop" class="dropdown hidden" style="right:0;top:44px;width:340px">
+        <div class="dropdown-head"><div><p class="dropdown-heading">Notifications</p><p class="dropdown-sub" id="bellSub">Latest updates</p></div></div>
+        <div id="bellList" class="flex flex-col"></div>
+        <div class="dropdown-sep"></div>
+        <div class="dropdown-foot"><button class="btn btn-ghost btn-sm btn-block" onclick="go('notifications')">View all notifications</button></div>
+      </div>
+    </div>
+    <button class="icon-btn hide-mobile" onclick="go('help')" title="Help centre"><i data-lucide="circle-help" class="i20"></i></button>
+    <div class="relative">
+      <button class="flex items-center gap-2 cursor-pointer bg-transparent border-none font-jakarta" id="profileBtn" style="font-family:var(--font)">
+        <span class="avatar" id="topAvatar" style="width:32px;height:32px;font-size:13px">TH</span>
+        <span class="user-name t-small">Tal Hassal</span>
+        <i data-lucide="chevron-down" class="i16 hide-mobile" style="color:#6b7280"></i>
+      </button>
+      <div id="profilePop" class="dropdown hidden" style="right:0;top:44px">
+        <div class="dropdown-head"><span class="dropdown-avatar" id="profileAvatar">TH</span><div><p class="dropdown-heading">Tal Hassal</p><p class="dropdown-sub">tal.hassal@sapphire.co</p></div></div>
+        <div class="dropdown-sep"></div>
+        <button class="dropdown-item" onclick="go('settings')"><span class="dropdown-ic"><i data-lucide="user-round" class="i16"></i></span><span class="dropdown-label">View profile</span></button>
+        <button class="dropdown-item" onclick="go('settings')"><span class="dropdown-ic"><i data-lucide="settings" class="i16"></i></span><span class="dropdown-label">Settings</span></button>
+        <div class="dropdown-sep"></div>
+        <button class="dropdown-item danger" onclick="openModal('signoutModal')"><span class="dropdown-ic danger"><i data-lucide="log-out" class="i16"></i></span><span class="dropdown-label">Sign out</span></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= Main ================= -->
+<main class="main-wrap">
+<div class="page-shell">
+
+  <!-- ======== Page: Dashboard ======== -->
+  <section class="page active" id="page-dashboard">
+    <div class="card card-pad anim-fadeUp" style="margin-bottom:24px">
+      <h2 class="t-h2" style="margin:0 0 16px">Quick search</h2>
+      <div class="flex gap-3" style="display:flex;gap:12px;flex-wrap:wrap">
+        <div class="search-box" style="flex:1;min-width:220px">
+          <i data-lucide="search" class="i20" style="color:#8a8d9f"></i>
+          <input id="quickSearch" value="{{ q }}" placeholder="Search by ID number, passport number, policy or quote number..." />
+          <button id="clearSearch" class="icon-btn hidden" style="width:28px;height:28px" title="Clear search"><i data-lucide="x" class="i16"></i></button>
+        </div>
+        <button id="searchBtn" class="btn btn-primary btn-lg"><i data-lucide="search" class="i18"></i> Search</button>
+      </div>
+      <div class="flex items-center" style="display:flex;flex-wrap:wrap;gap:4px 20px;margin-top:14px">
+        <button class="chip" data-chip="id"><i data-lucide="id-card" class="i16"></i> ID number</button>
+        <button class="chip" data-chip="lead"><i data-lucide="file-text" class="i16"></i> Lead ID</button>
+        <button class="chip" data-chip="quote"><i data-lucide="calendar-days" class="i16"></i> Quote number</button>
+        <button class="chip" data-chip="policy"><i data-lucide="shield-check" class="i16"></i> Policy number</button>
+      </div>
+      <div class="flex items-center" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <span class="t-small" style="color:var(--muted);padding-right:12px;border-right:1px solid var(--line-strong)">Most recent</span>
+        <button class="pill pill-channel" data-recent="quote"><i data-lucide="file-text" class="i14"></i> Quote</button>
+        <button class="pill pill-channel" data-recent="policy"><i data-lucide="shield-check" class="i14"></i> Policy</button>
+        <span id="searchMeta" class="t-caption" style="margin-left:auto"></span>
+      </div>
+    </div>
+
+    <div class="card anim-fadeUp" style="animation-delay:.08s;overflow:hidden">
+      <div class="card-head">
+        <h2 class="t-h2" style="margin:0">Recent activity</h2>
+        <div class="flex items-center gap-2" style="display:flex;gap:8px">
+          <div class="relative">
+            <button id="filterBtn" class="btn btn-ghost btn-sm"><i data-lucide="filter" class="i16"></i> Filter</button>
+            <div id="filterPop" class="dropdown hidden" style="right:0;top:42px">
+              <div class="dropdown-head"><div><p class="dropdown-heading">Filter by channel</p><p class="dropdown-sub">Show records from one source</p></div></div>
+              <div class="flex flex-col" data-channel-list>
+                <button class="dropdown-item active" data-channel="all"><span class="dropdown-ic"><i data-lucide="layout-grid" class="i16"></i></span><span class="dropdown-label">All channels</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+                <button class="dropdown-item" data-channel="Branch"><span class="dropdown-ic"><i data-lucide="building-2" class="i16"></i></span><span class="dropdown-label">Branch</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+                <button class="dropdown-item" data-channel="Website"><span class="dropdown-ic"><i data-lucide="globe" class="i16"></i></span><span class="dropdown-label">Website</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+                <button class="dropdown-item" data-channel="Referral"><span class="dropdown-ic"><i data-lucide="handshake" class="i16"></i></span><span class="dropdown-label">Referral</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+                <button class="dropdown-item" data-channel="Boomerang"><span class="dropdown-ic"><i data-lucide="message-circle" class="i16"></i></span><span class="dropdown-label">Boomerang</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+                <button class="dropdown-item" data-channel="SAP"><span class="dropdown-ic"><i data-lucide="database" class="i16"></i></span><span class="dropdown-label">SAP</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+                <button class="dropdown-item" data-channel="Social media"><span class="dropdown-ic"><i data-lucide="thumbs-up" class="i16"></i></span><span class="dropdown-label">Social media</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="relative">
+            <button id="sortBtn" class="btn btn-ghost btn-sm"><i data-lucide="arrow-up-down" class="i16"></i> <span id="sortLabel">Name</span></button>
+            <div id="sortPop" class="dropdown hidden" style="right:0;top:42px">
+              <div class="dropdown-head"><div><p class="dropdown-heading">Sort by</p><p class="dropdown-sub">Order the activity list</p></div></div>
+              <button class="dropdown-item" data-sort-opt="name-asc"><span class="dropdown-ic"><i data-lucide="arrow-down-a-z" class="i16"></i></span><span class="dropdown-label">Name A to Z</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+              <button class="dropdown-item" data-sort-opt="name-desc"><span class="dropdown-ic"><i data-lucide="arrow-down-z-a" class="i16"></i></span><span class="dropdown-label">Name Z to A</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+              <button class="dropdown-item" data-sort-opt="date-desc"><span class="dropdown-ic"><i data-lucide="calendar-arrow-down" class="i16"></i></span><span class="dropdown-label">Newest first</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+              <button class="dropdown-item" data-sort-opt="date-asc"><span class="dropdown-ic"><i data-lucide="calendar-arrow-up" class="i16"></i></span><span class="dropdown-label">Oldest first</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            </div>
+          </div>
+          <button onclick="openModal('quoteModal')" class="btn btn-primary btn-sm"><i data-lucide="plus" class="i16"></i> New quote</button>
+        </div>
+      </div>
+      <div class="flex items-center px-2 border-b" style="display:flex;border-bottom:1px solid var(--line);overflow-x:auto;padding:0 8px">
+        <button class="tab-btn {% if tab == 'all' %}'active'{% else %}''{% endif %}" data-tab="all">All<span class="tab-ink"></span></button>
+        <button class="tab-btn {% if tab == 'quotes' or tab == 'quote' %}'active'{% else %}''{% endif %}" data-tab="quotes">Quotes<span class="count-badge" id="cQuotes">{{ counts.quotes }}</span><span class="tab-ink"></span></button>
+        <button class="tab-btn {% if tab == 'policies' or tab == 'policy' %}'active'{% else %}''{% endif %}" data-tab="policies">Policies<span class="count-badge" id="cPolicies">{{ counts.policies }}</span><span class="tab-ink"></span></button>
+        <button class="tab-btn {% if tab == 'leads' or tab == 'lead' %}'active'{% else %}''{% endif %}" data-tab="leads">Leads<span class="count-badge" id="cLeads">{{ counts.leads }}</span><span class="tab-ink"></span></button>
+      </div>
+      <div class="table-wrap table-scroll" tabindex="0" role="region" aria-label="Activity records. Scroll horizontally to see all columns.">
+        <table class="grid">
+          <thead><tr>
+            <th>Type</th>
+            <th class="sortable" data-sort="name">Name <i data-lucide="chevron-down" class="i14" style="display:inline;vertical-align:-2px"></i></th>
+            <th class="sortable" data-sort="date">Date opened <i data-lucide="chevron-down" class="i14" style="display:inline;vertical-align:-2px"></i></th>
+            <th>Reference no.</th><th>Channel</th><th>ID number</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="tbody">
+            {% for r in rows %}
+            <tr data-id="{{ r.id }}">
+              <td>{% if r.type == 'quote' %}<span class="pill pill-quote"><i data-lucide="file-text" class="i14"></i>Quote</span>
+                {% elif r.type == 'policy' %}<span class="pill pill-policy"><i data-lucide="shield-check" class="i14"></i>Policy</span>
+                {% else %}<span class="pill pill-lead"><i data-lucide="sparkles" class="i14"></i>Lead</span>{% endif %}</td>
+              <td>{{ r.name }}</td><td>{{ r.date }}</td><td>{{ r.number }}</td>
+              <td><span class="pill pill-channel"><i data-lucide="{{ r.channel_icon }}" class="i14"></i>{{ r.channel }}</span></td>
+              <td>{{ r.id_number }}</td>
+              <td><button class="view-link" onclick="openDetail({{ r.id }})">View <i data-lucide="arrow-right" class="i14"></i></button></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="record-cards" id="recordCards">
+        {% for r in rows %}
+        <article class="record-card">
+          <div class="record-card-top">
+            {% if r.type == 'quote' %}<span class="pill pill-quote"><i data-lucide="file-text" class="i14"></i>Quote</span>
+            {% elif r.type == 'policy' %}<span class="pill pill-policy"><i data-lucide="shield-check" class="i14"></i>Policy</span>
+            {% else %}<span class="pill pill-lead"><i data-lucide="sparkles" class="i14"></i>Lead</span>{% endif %}
+            <button class="view-link" onclick="openDetail({{ r.id }})">View <i data-lucide="arrow-right" class="i14"></i></button>
+          </div>
+          <p class="record-card-name" style="margin:0">{{ r.name }}</p>
+          <div class="record-card-meta"><span>{{ r.date }}</span><span>·</span><span>{{ r.number }}</span></div>
+          <div class="record-card-foot"><span class="pill pill-channel"><i data-lucide="{{ r.channel_icon }}" class="i14"></i>{{ r.channel }}</span><span class="t-caption">{{ r.id_number }}</span></div>
+        </article>
+        {% endfor %}
+      </div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-ic"><i data-lucide="search-x" class="i24"></i></div>
+        <p class="t-h2" style="margin:0 0 4px">No results found</p>
+        <p class="t-small" style="color:var(--muted);margin:0 0 16px">Try a different search term or clear the filter.</p>
+        <button class="btn btn-ghost btn-sm" onclick="clearAllFilters()">Clear search and filters</button>
+      </div>
+      <div class="flex items-center justify-between card-head" style="border-bottom:none;border-top:1px solid var(--line)">
+        <span id="rangeLabel" class="t-small" style="color:var(--muted)">Showing {{ start_item }}-{{ end_item }} of {{ total }} results</span>
+        <div id="pager" class="flex items-center gap-2" style="display:flex;gap:8px">
+          <button class="page-btn" data-page="prev"><i data-lucide="chevron-left" class="i16"></i></button>
+          {% for p in pages_range %}<button class="page-btn {% if p == page %}active{% else %}{% endif %}" data-page="{{ p }}">{{ p }}</button>{% endfor %}
+          <button class="page-btn" data-page="next"><i data-lucide="chevron-right" class="i16"></i></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== Page: Policies ======== -->
+  <section class="page" id="page-policies">
+    <div class="grid stat-grid stagger" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px" id="policyStats"></div>
+    <div class="card" style="overflow:hidden">
+      <div class="card-head">
+        <div><h2 class="t-h2" style="margin:0">All policies</h2><p class="t-caption" style="margin:4px 0 0">Every issued policy, searchable and sortable.</p></div>
+        <div class="flex items-center gap-2" style="display:flex;gap:8px">
+          <div class="search-box" style="height:40px;width:260px"><i data-lucide="search" class="i16" style="color:#8a8d9f"></i><input id="policySearch" placeholder="Search policies..." /></div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('quoteModal')"><i data-lucide="plus" class="i16"></i> New quote</button>
+        </div>
+      </div>
+      <div class="table-wrap table-scroll" tabindex="0" role="region" aria-label="Policy records. Scroll horizontally to see all columns."><table class="grid"><thead><tr><th>Type</th><th>Name</th><th>Date opened</th><th>Reference no.</th><th>Channel</th><th>ID number</th><th>Actions</th></tr></thead>
+      <tbody id="tbodyPolicies"></tbody></table></div>
+      <div class="record-cards" id="policyCards"></div>
+      <div class="flex items-center justify-between card-head" style="border-bottom:none;border-top:1px solid var(--line)">
+        <span id="policyRange" class="t-small" style="color:var(--muted)"></span>
+        <div id="policyPager" style="display:flex;gap:8px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== Page: Clients ======== -->
+  <section class="page" id="page-clients">
+    <div class="card card-pad" style="margin-bottom:24px">
+      <h2 class="t-h2" style="margin:0 0 4px">Clients</h2>
+      <p class="t-small" style="color:var(--muted);margin:0 0 16px">Everyone with a quote, policy or lead on the books.</p>
+      <div class="search-box" style="max-width:420px"><i data-lucide="search" class="i18" style="color:#8a8d9f"></i><input id="clientSearch" placeholder="Search clients by name or ID number..." /></div>
+    </div>
+    <div class="grid grid-2 stagger" id="clientGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px"></div>
+  </section>
+
+  <!-- ======== Page: Messages ======== -->
+  <section class="page" id="page-messages">
+    <div class="card card-pad" style="margin-bottom:24px">
+      <div class="flex items-center justify-between" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div><h2 class="t-h2" style="margin:0">Messages</h2><p class="t-small" style="color:var(--muted);margin:4px 0 0">Live chat with clients and colleagues.</p></div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('composeModal')"><i data-lucide="pen-line" class="i16"></i> New message</button>
+      </div>
+      <div class="flex items-center" style="display:flex;gap:4px 12px;flex-wrap:wrap;margin-top:14px">
+        <button class="chip selected" data-msg-filter="all">All chats</button>
+        <button class="chip" data-msg-filter="important">Important</button>
+        <button class="chip" data-msg-filter="pending">To resolve</button>
+        <button class="chip" data-msg-filter="resolved">Resolved</button>
+      </div>
+    </div>
+    <div class="grid grid-2" style="display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start">
+      <div class="flex flex-col gap-2" id="threadList" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div class="card card-pad">
+        <div id="threadView"><div class="empty-state"><div class="empty-ic"><i data-lucide="message-square-text" class="i24"></i></div>
+          <p class="t-h2" style="margin:0 0 4px">Select a conversation</p><p class="t-small" style="color:var(--muted);margin:0">Pick a thread on the left to resume chatting.</p></div></div>
+        <div class="flex gap-2" id="replyRow" style="display:none;gap:8px;margin-top:16px;align-items:center">
+          <div style="position:relative">
+            <button class="icon-btn bordered" id="emojiBtn" title="Add emoji"><i data-lucide="smile" class="i18"></i></button>
+            <div id="emojiPop" class="dropdown hidden" style="left:0;bottom:46px;min-width:0;width:272px">
+              <div class="dropdown-head"><div><p class="dropdown-heading">Emoji</p><p class="dropdown-sub">Select one to insert</p></div></div>
+              <div id="emojiGrid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:2px;padding:2px 4px 6px"></div>
+            </div>
+          </div>
+          <button class="icon-btn bordered" onclick="triggerAttach()" title="Attach a file"><i data-lucide="paperclip" class="i18"></i></button>
+          <input type="file" id="attachInput" class="hidden" onchange="handleAttach(this)" />
+          <input class="input" id="replyInput" placeholder="Write a reply..." style="flex:1" />
+          <button class="btn btn-primary" onclick="sendReply(this)"><i data-lucide="send-horizontal" class="i16"></i> Send</button>
+        </div>
+        <div id="endedBanner" style="display:none;margin-top:16px;padding:16px;border-radius:12px;background:#f1f3f7;text-align:center">
+          <p class="t-body" style="margin:0 0 4px;font-weight:700">This chat session has ended</p>
+          <p class="t-small" style="margin:0 0 12px;color:var(--muted)">Reopen it to continue the conversation.</p>
+          <button class="btn btn-sapphire btn-sm" onclick="reopenChat(this)">Reopen chat</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== Page: Settings ======== -->
+  <section class="page" id="page-settings">
+    <div class="grid grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div class="card card-pad">
+        <h2 class="t-h2" style="margin:0 0 4px">Profile</h2>
+        <p class="t-small" style="color:var(--muted);margin:0 0 18px">How you appear to the team.</p>
+        <label class="field-label" for="setName">Full name</label>
+        <input class="input" id="setName" value="Tal Hassal" style="margin-bottom:14px" />
+        <label class="field-label" for="setEmail">Work email</label>
+        <input class="input" id="setEmail" value="tal.hassal@sapphire.co" style="margin-bottom:14px" />
+        <label class="field-label" id="roleLabelText">Role</label>
+        <div style="position:relative;margin-bottom:20px">
+          <button class="input dropdown-trigger" id="roleBtn" aria-haspopup="listbox" style="display:flex;align-items:center;gap:12px;text-align:left">
+            <span class="dropdown-ic" id="roleIconWrap"><i data-lucide="briefcase" class="i16"></i></span>
+            <span class="dropdown-label" id="roleLabel">Broker</span>
+            <i data-lucide="chevron-down" class="i16" style="color:var(--muted);flex-shrink:0"></i>
+          </button>
+          <div id="rolePop" class="dropdown hidden" style="left:0;right:0;top:calc(100% + 6px)">
+            <div class="dropdown-head"><div><p class="dropdown-heading">Role</p><p class="dropdown-sub">Choose your access level</p></div></div>
+            <button class="dropdown-item active" data-role="Broker"><span class="dropdown-ic"><i data-lucide="briefcase" class="i16"></i></span><span class="dropdown-label">Broker<small>Quotes, policies and clients</small></span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item" data-role="Administrator"><span class="dropdown-ic"><i data-lucide="shield-check" class="i16"></i></span><span class="dropdown-label">Administrator<small>Full access to everything</small></span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item" data-role="Claims handler"><span class="dropdown-ic"><i data-lucide="clipboard-list" class="i16"></i></span><span class="dropdown-label">Claims handler<small>Claims and documents</small></span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item" data-role="Viewer"><span class="dropdown-ic"><i data-lucide="eye" class="i16"></i></span><span class="dropdown-label">Viewer<small>Read-only access</small></span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top:0"><button class="btn btn-ghost" onclick="resetSettings()">Reset</button><button class="btn btn-primary" onclick="saveSettings(this)">Save changes</button></div>
+      </div>
+      <div class="flex flex-col gap-4" style="display:flex;flex-direction:column;gap:16px">
+        <div class="card card-pad">
+          <h2 class="t-h2" style="margin:0 0 4px">Notifications</h2>
+          <p class="t-small" style="color:var(--muted);margin:0 0 14px">Choose what reaches you.</p>
+          <div id="settingsToggles"></div>
+        </div>
+        <div class="card card-pad">
+          <h2 class="t-h2" style="margin:0 0 4px">Appearance</h2>
+          <p class="t-small" style="color:var(--muted);margin:0 0 14px">Pick the accent used across buttons and highlights.</p>
+          <div class="flex gap-2" id="themeRow" style="display:flex;gap:8px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== Page: Notifications ======== -->
+  <section class="page" id="page-notifications">
+    <div class="card" style="overflow:hidden">
+      <div class="card-head">
+        <div><h2 class="t-h2" style="margin:0">Notifications</h2><p class="t-caption" style="margin:4px 0 0" id="notifSub"></p></div>
+        <div class="flex items-center gap-2" style="display:flex;gap:8px">
+          <div class="relative">
+            <button class="btn btn-ghost btn-sm" id="notifFilterBtn"><i data-lucide="filter" class="i16"></i> <span id="notifFilterLabel">All</span></button>
+            <div id="notifFilterPop" class="dropdown hidden" style="right:0;top:42px">
+              <div class="dropdown-head"><div><p class="dropdown-heading">Show</p><p class="dropdown-sub">Choose which updates to list</p></div></div>
+              <button class="dropdown-item active" data-notif-filter="all"><span class="dropdown-ic"><i data-lucide="list-checks" class="i16"></i></span><span class="dropdown-label">All</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+              <button class="dropdown-item" data-notif-filter="unread"><span class="dropdown-ic"><i data-lucide="mail-open" class="i16"></i></span><span class="dropdown-label">Unread only</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="markAllRead(this)"><i data-lucide="check-check" class="i16"></i> Mark all read</button>
+        </div>
+      </div>
+      <div id="notifList" class="flex flex-col" style="display:flex;flex-direction:column"></div>
+    </div>
+  </section>
+
+  <!-- ======== Page: Help ======== -->
+  <section class="page" id="page-help">
+    <div class="card card-pad" style="margin-bottom:24px">
+      <h2 class="t-h2" style="margin:0 0 4px">Help centre</h2>
+      <p class="t-small" style="color:var(--muted);margin:0 0 16px">Answers to the questions we hear most.</p>
+      <div class="search-box" style="max-width:420px"><i data-lucide="search" class="i18" style="color:#8a8d9f"></i><input id="faqSearch" placeholder="Search help articles..." /></div>
+    </div>
+    <div class="flex flex-col gap-3" id="faqList" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div class="card card-pad" style="margin-top:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div class="stat-ic" style="background:rgba(0,51,170,.08);color:#0033aa"><i data-lucide="headset" class="i22"></i></div>
+      <div style="flex:1;min-width:200px"><p class="t-h2" style="margin:0">Still stuck?</p><p class="t-small" style="color:var(--muted);margin:4px 0 0">Our support team replies within one business day.</p></div>
+      <button class="btn btn-sapphire" onclick="openModal('composeModal')">Contact support</button>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- FAB -->
+<button class="fab" onclick="openModal('quoteModal')" title="New quote"><i data-lucide="plus" class="i24"></i></button>
+
+<!-- ===== Modal: New quote (same structure as all modals) ===== -->
+<div id="quoteModal" class="modal-wrap" style="display:none">
+  <div class="overlay" onclick="closeModal('quoteModal')"></div>
+  <div class="modal-card modal-card-lg">
+    <div class="flex items-center justify-between" style="display:flex;justify-content:space-between;align-items:center">
+      <h3 class="modal-title">New quote</h3><button class="icon-btn" onclick="closeModal('quoteModal')"><i data-lucide="x" class="i20"></i></button>
+    </div>
+    <p class="modal-sub">Create a quote — it appears instantly in recent activity.</p>
+    <label class="field-label" for="nqName">Full name</label>
+    <input id="nqName" class="input" placeholder="e.g. Cody Martin" style="margin-bottom:14px" />
+    <div class="grid grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><label class="field-label" id="nqChannelText">Channel</label>
+        <div style="position:relative">
+          <button class="input dropdown-trigger" id="nqChannelBtn" aria-haspopup="listbox" style="display:flex;align-items:center;gap:12px;text-align:left">
+            <span class="dropdown-ic" id="nqChannelIconWrap"><i data-lucide="building-2" class="i16"></i></span>
+            <span class="dropdown-label" id="nqChannelLabel">Branch</span>
+            <i data-lucide="chevron-down" class="i16" style="color:var(--muted);flex-shrink:0"></i>
+          </button>
+          <div id="nqChannelPop" class="dropdown hidden" style="left:0;right:0;top:calc(100% + 6px)">
+            <div class="dropdown-head"><div><p class="dropdown-heading">Channel</p><p class="dropdown-sub">Where this quote came from</p></div></div>
+            <button class="dropdown-item active" data-nqchannel="Branch"><span class="dropdown-ic"><i data-lucide="building-2" class="i16"></i></span><span class="dropdown-label">Branch</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item" data-nqchannel="Website"><span class="dropdown-ic"><i data-lucide="globe" class="i16"></i></span><span class="dropdown-label">Website</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item" data-nqchannel="Referral"><span class="dropdown-ic"><i data-lucide="handshake" class="i16"></i></span><span class="dropdown-label">Referral</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item" data-nqchannel="Boomerang"><span class="dropdown-ic"><i data-lucide="message-circle" class="i16"></i></span><span class="dropdown-label">Boomerang</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item" data-nqchannel="SAP"><span class="dropdown-ic"><i data-lucide="database" class="i16"></i></span><span class="dropdown-label">SAP</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item" data-nqchannel="Social media"><span class="dropdown-ic"><i data-lucide="thumbs-up" class="i16"></i></span><span class="dropdown-label">Social media</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+          </div>
+        </div></div>
+      <div><label class="field-label" for="nqId">ID number</label><input id="nqId" class="input" placeholder="9311160103084" /></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('quoteModal')">Cancel</button><button class="btn btn-primary" onclick="submitQuote(this)"><i data-lucide="file-plus-2" class="i16"></i> Create quote</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal: New claim ===== -->
+<div id="claimModal" class="modal-wrap" style="display:none">
+  <div class="overlay" onclick="closeModal('claimModal')"></div>
+  <div class="modal-card">
+    <div class="flex items-center justify-between" style="display:flex;justify-content:space-between;align-items:center">
+      <h3 class="modal-title">New claim</h3><button class="icon-btn" onclick="closeModal('claimModal')"><i data-lucide="x" class="i20"></i></button>
+    </div>
+    <p class="modal-sub">Open a claim for an existing policy holder.</p>
+    <label class="field-label" for="ncName">Customer name</label>
+    <input id="ncName" class="input" placeholder="e.g. Gary Wallace" style="margin-bottom:14px" />
+    <label class="field-label" for="ncDesc">Description</label>
+    <textarea id="ncDesc" class="textarea" rows="3" placeholder="Brief description of the claim..."></textarea>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('claimModal')">Cancel</button><button class="btn btn-primary" onclick="submitClaim(this)">Open claim</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal: New message ===== -->
+<div id="composeModal" class="modal-wrap" style="display:none">
+  <div class="overlay" onclick="closeModal('composeModal')"></div>
+  <div class="modal-card">
+    <div class="flex items-center justify-between" style="display:flex;justify-content:space-between;align-items:center">
+      <h3 class="modal-title">New message</h3><button class="icon-btn" onclick="closeModal('composeModal')"><i data-lucide="x" class="i20"></i></button>
+    </div>
+    <p class="modal-sub">Start a conversation with a client or colleague.</p>
+    <label class="field-label" for="cmTo">Recipient</label>
+    <input id="cmTo" class="input" placeholder="e.g. Cody Martin" style="margin-bottom:14px" />
+    <label class="field-label" for="cmBody">Message</label>
+    <textarea id="cmBody" class="textarea" rows="3" placeholder="Write your message..."></textarea>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('composeModal')">Cancel</button><button class="btn btn-primary" onclick="sendMessage(this)"><i data-lucide="send-horizontal" class="i16"></i> Send message</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal: Sign out ===== -->
+<div id="signoutModal" class="modal-wrap" style="display:none">
+  <div class="overlay" onclick="closeModal('signoutModal')"></div>
+  <div class="modal-card" style="max-width:380px">
+    <div class="flex items-center justify-between" style="display:flex;justify-content:space-between;align-items:center">
+      <h3 class="modal-title">Sign out?</h3><button class="icon-btn" onclick="closeModal('signoutModal')"><i data-lucide="x" class="i20"></i></button>
+    </div>
+    <p class="modal-sub">You will need to sign back in to access the dashboard.</p>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('signoutModal')">Stay signed in</button><button class="btn btn-danger-ghost" onclick="signOut()">Sign out</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal: Agent chat ===== -->
+<div id="agentChatModal" class="modal-wrap" style="display:none">
+  <div class="overlay" onclick="closeModal('agentChatModal')"></div>
+  <div class="modal-card" style="max-width:520px;padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:85vh">
+    <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--line)">
+      <div class="flex items-center gap-3">
+        <span class="avatar" id="agentChatAvatar" style="width:36px;height:36px;font-size:13px;background:rgba(0,145,255,.12);color:#0063b8">--</span>
+        <div><h3 class="modal-title" style="font-size:15px">Agent chat</h3><p class="t-caption" style="margin:0">Ask, share files, ping your team</p></div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="icon-btn bordered" onclick="pingAgent()" title="Ping agent"><i data-lucide="bell-ring" class="i18"></i></button>
+        <button class="icon-btn bordered" onclick="ringAgent()" title="Ring agent"><i data-lucide="phone" class="i18"></i></button>
+        <button class="icon-btn" onclick="closeModal('agentChatModal')"><i data-lucide="x" class="i20"></i></button>
+      </div>
+    </div>
+    <div class="flex" style="flex:1;min-height:0">
+      <div class="w-48 flex flex-col gap-1 p-3" style="border-right:1px solid var(--line);overflow-y:auto" id="agentList"></div>
+      <div class="flex-1 flex flex-col" style="min-width:0">
+        <div id="agentChatView" class="flex-1 flex flex-col items-center justify-center p-6 text-center" style="min-height:280px">
+          <span class="avatar" style="width:64px;height:64px;font-size:22px;margin-bottom:12px;background:rgba(0,145,255,.12);color:#0063b8"><i data-lucide="headset" class="i28"></i></span>
+          <p class="t-h2" style="margin:0 0 4px">Pick an agent</p>
+          <p class="t-small" style="color:var(--muted);margin:0">Choose a teammate to start chatting, sharing files, or pinging.</p>
+        </div>
+        <div id="agentChatMessages" class="flex-1 flex-col gap-2 p-4" style="display:none;overflow-y:auto;min-height:280px;max-height:340px"></div>
+        <div class="flex items-center gap-2 p-3" style="border-top:1px solid var(--line)">
+          <button class="icon-btn bordered" onclick="triggerAgentAttach()" title="Attach a file"><i data-lucide="paperclip" class="i18"></i></button>
+          <input type="file" id="agentAttachInput" class="hidden" onchange="handleAgentAttach(this)" />
+          <input class="input" id="agentChatInput" placeholder="Write a message..." style="flex:1" />
+          <button class="btn btn-primary btn-sm" onclick="sendAgentMessage(this)"><i data-lucide="send-horizontal" class="i16"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Detail drawer ===== -->
+<div id="drawer" class="hidden fixed inset-0 z-50" style="display:none">
+  <div class="overlay" onclick="closeDrawer()"></div>
+  <aside class="drawer-panel">
+    <div class="flex items-center justify-between" style="display:flex;justify-content:space-between;align-items:center">
+      <h3 class="modal-title">Record details</h3><button class="icon-btn" onclick="closeDrawer()"><i data-lucide="x" class="i20"></i></button>
+    </div>
+    <div id="drawerBody" style="margin-top:16px"></div>
+  </aside>
+</div>
+
+<!-- ===== Modal: Update chat status ===== -->
+<div id="resolveModal" class="modal-wrap" style="display:none">
+  <div class="overlay" onclick="closeModal('resolveModal')"></div>
+  <div class="modal-card">
+    <div class="flex items-center justify-between" style="display:flex;justify-content:space-between;align-items:center">
+      <h3 class="modal-title">Update chat status</h3><button class="icon-btn" onclick="closeModal('resolveModal')"><i data-lucide="x" class="i20"></i></button>
+    </div>
+    <p class="modal-sub">Resolve the conversation or park it with a reason and reminder.</p>
+    <div class="seg" style="margin-bottom:16px">
+      <button class="seg-btn" id="outcomeResolved" onclick="setOutcome('resolved')">Resolved</button>
+      <button class="seg-btn" id="outcomePending" onclick="setOutcome('pending')">Needs follow-up</button>
+    </div>
+    <div id="pendingFields">
+      <label class="field-label">Reason</label>
+      <div style="position:relative;margin-bottom:14px">
+        <button class="input dropdown-trigger" id="resolveReasonBtn" style="display:flex;align-items:center;gap:12px;text-align:left">
+          <span class="dropdown-ic"><i data-lucide="file-warning" class="i16"></i></span>
+          <span class="dropdown-label" id="resolveReasonLabel">Documentation outstanding</span>
+          <i data-lucide="chevron-down" class="i16" style="color:var(--muted);flex-shrink:0"></i>
+        </button>
+        <div id="resolveReasonPop" class="dropdown hidden" style="left:0;right:0;top:calc(100% + 6px)">
+          <div class="dropdown-head"><div><p class="dropdown-heading">Reason</p><p class="dropdown-sub">Why is this unresolved</p></div></div>
+          <div id="reasonOptions"></div>
+        </div>
+      </div>
+      <label class="field-label">Reminder</label>
+      <div style="position:relative">
+        <button class="input dropdown-trigger" id="resolveReminderBtn" style="display:flex;align-items:center;gap:12px;text-align:left">
+          <span class="dropdown-ic"><i data-lucide="bell-ring" class="i16"></i></span>
+          <span class="dropdown-label" id="resolveReminderLabel">Tomorrow</span>
+          <i data-lucide="chevron-down" class="i16" style="color:var(--muted);flex-shrink:0"></i>
+        </button>
+        <div id="resolveReminderPop" class="dropdown hidden" style="left:0;right:0;top:calc(100% + 6px)">
+          <div class="dropdown-head"><div><p class="dropdown-heading">Reminder</p><p class="dropdown-sub">When should we follow up</p></div></div>
+          <div id="reminderOptions"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('resolveModal')">Cancel</button><button class="btn btn-primary" onclick="saveResolve(this)">Save status</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal: End chat session ===== -->
+<div id="endModal" class="modal-wrap" style="display:none">
+  <div class="overlay" onclick="closeModal('endModal')"></div>
+  <div class="modal-card" style="max-width:380px">
+    <div class="flex items-center justify-between" style="display:flex;justify-content:space-between;align-items:center">
+      <h3 class="modal-title">End chat session?</h3><button class="icon-btn" onclick="closeModal('endModal')"><i data-lucide="x" class="i20"></i></button>
+    </div>
+    <p class="modal-sub">The conversation closes and replies turn off. You can reopen it at any time.</p>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('endModal')">Keep chatting</button><button class="btn btn-danger-ghost" onclick="confirmEndChat(this)">End session</button></div>
+  </div>
+</div>
+
+<!-- ===== Modal: Call ===== -->
+<div id="callModal" class="modal-wrap" style="display:none">
+  <div class="overlay"></div>
+  <div class="modal-card" style="max-width:340px;text-align:center">
+    <div class="avatar" id="callAvatar" style="width:76px;height:76px;font-size:24px;margin:4px auto 12px">--</div>
+    <h3 class="modal-title" id="callName">Caller</h3>
+    <p class="modal-sub" id="callType" style="margin-bottom:4px">Voice call</p>
+    <p class="t-h2" id="callStatus" style="margin:0 0 20px;font-size:15px">Ringing…</p>
+    <div class="flex items-center justify-center gap-3" style="display:flex;justify-content:center;gap:12px">
+      <button class="call-btn" id="muteBtn" onclick="this.classList.toggle('on')" title="Mute"><i data-lucide="mic-off" class="i20"></i></button>
+      <button class="call-btn" id="speakerBtn" onclick="this.classList.toggle('on')" title="Speaker"><i data-lucide="volume-2" class="i20"></i></button>
+      <button class="call-btn end" onclick="endCall()" title="End call"><i data-lucide="phone-off" class="i20"></i></button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script>refreshIcons();</script>
+</body>
+</html>

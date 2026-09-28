@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{% block title %}Sapphire — access account{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=4">
+</head>
+<body>
+<div class="page-wrap">
+  {% block header %}
+  <header class="page-header">
+    <img class="page-logo" src="{% static 'img/icon-sapphire.svg' %}" alt="Sapphire" />
+  </header>
+  {% endblock %}
+  <main class="page-main">
+    {% block avatar %}{% endblock %}
+    {% block body %}{% endblock %}
+  </main>
+  <footer class="page-footer">
+    <p class="foot-title">Sapphire version 2.0</p>
+  </footer>
+</div>
+<div id="toasts">
+  {% for message in messages %}
+  <div class="toast" data-toast>{{ message }}</div>
+  {% endfor %}
+</div>
+<script src="{% static 'js/login.js' %}"></script>
+{% block extra_js %}{% endblock %}
+<script>lucide.createIcons();</script>
+</body>
+</html>

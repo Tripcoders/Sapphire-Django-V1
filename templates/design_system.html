@@ -1,0 +1,353 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sapphire design system — living storybook</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { theme: { extend: { colors: { sapphire:'#0033aa', accent:'#0091ff', ink:'#1a1d2c', muted:'#4e5468' }, fontFamily: { jakarta:['"Plus Jakarta Sans"','Inter','system-ui','sans-serif'] } } } };</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+  .ds-tabs{ position:sticky; top:var(--top-h); z-index:30; background:rgba(253,253,253,.95); backdrop-filter:blur(8px); border:none; }
+  .ds-section{ display:none; } .ds-section.active{ display:block; animation:fadeUp .45s cubic-bezier(.22,1,.36,1) both; }
+  .ds-block{ margin-bottom:20px; }
+  .ds-label{ font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.04em; margin:0 0 10px; }
+  .ds-rule{ font-size:13px; color:var(--muted); background:#eef2ff; border-radius:10px; padding:10px 14px; margin:0 0 16px; }
+  .swatch-card{ border:1px solid var(--line); border-radius:14px; overflow:hidden; cursor:pointer; background:#fff; transition:transform .2s, box-shadow .2s; text-align:left; font-family:var(--font); padding:0; }
+  .swatch-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow-lift); }
+  .space-bar{ background:linear-gradient(135deg,#0033aa,#0091ff); border-radius:6px; height:14px; }
+  .type-row{ border-bottom:1px solid var(--line); padding:12px 0; }
+  .icon-cell{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 4px; border:1px solid var(--line); border-radius:12px; background:#fff; font-size:10.5px; color:var(--muted); font-weight:600; text-align:center; }
+  .motion-box{ height:110px; border-radius:14px; background:linear-gradient(135deg,#0033aa,#0091ff); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; cursor:pointer; }
+  .wire{ border-radius:8px; }
+  code.k{ font-family:ui-monospace,monospace; font-size:12px; background:#eef1f6; padding:2px 8px; border-radius:6px; color:var(--sapphire); }
+  .ds-snippet{ background:#1a1d2c; color:#e5e7eb; border-radius:10px; padding:14px 16px; font-family:ui-monospace,monospace; font-size:12px; line-height:1.6; overflow-x:auto; white-space:pre; }
+  .ds-cat{ font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:0 0 8px; padding:0 2px; }
+  .ds-card-name{ font-size:13px; font-weight:700; margin:0 0 2px; }
+  .ds-card-desc{ font-size:12px; color:var(--muted); margin:0 0 12px; }
+</style>
+</head>
+<body class="font-jakarta" style="background:var(--bg);color:var(--ink)">
+
+<!-- ============ DESIGN SYSTEM HEADER (matches app topbar) ============ -->
+<header class="topbar" style="position:sticky;top:0;z-index:50;left:0;border-radius:0;border:none;box-shadow:none">
+  <a href="/" class="flex items-center gap-4" style="text-decoration:none" title="Back to dashboard">
+    <span class="icon-btn bordered"><i data-lucide="arrow-left" class="i18"></i></span>
+    <img src="{% static 'img/sapphire-horiz-logo.svg' %}" alt="Sapphire" style="height:26px;width:auto" />
+    <span class="pill pill-channel">Design system v2</span>
+  </a>
+  <nav class="ds-tabs" style="position:static;background:transparent;border:none;flex:1;display:flex;justify-content:center">
+    <div style="display:flex;gap:4px;overflow-x:auto">
+      <button class="tab-btn active" data-dstab="foundations"><i data-lucide="palette" class="i16" style="display:inline;vertical-align:-3px;margin-right:6px"></i>Foundations<span class="tab-ink"></span></button>
+      <button class="tab-btn" data-dstab="atoms"><i data-lucide="circle-dot" class="i16" style="display:inline;vertical-align:-3px;margin-right:6px"></i>Atoms<span class="tab-ink"></span></button>
+      <button class="tab-btn" data-dstab="molecules"><i data-lucide="layers" class="i16" style="display:inline;vertical-align:-3px;margin-right:6px"></i>Molecules<span class="tab-ink"></span></button>
+      <button class="tab-btn" data-dstab="organisms"><i data-lucide="grid-3x3" class="i16" style="display:inline;vertical-align:-3px;margin-right:6px"></i>Organisms<span class="tab-ink"></span></button>
+      <button class="tab-btn" data-dstab="templates"><i data-lucide="layout-template" class="i16" style="display:inline;vertical-align:-3px;margin-right:6px"></i>Templates<span class="tab-ink"></span></button>
+      <button class="tab-btn" data-dstab="pages"><i data-lucide="monitor" class="i16" style="display:inline;vertical-align:-3px;margin-right:6px"></i>Pages<span class="tab-ink"></span></button>
+    </div>
+  </nav>
+  <div style="display:flex;gap:8px">
+    <a href="/" class="btn btn-ghost btn-sm" style="text-decoration:none"><i data-lucide="layout-dashboard" class="i16"></i> Dashboard</a>
+    <button class="btn btn-primary btn-sm" onclick="navigator.clipboard && navigator.clipboard.writeText(window.location.href);showDsToast('Link copied to clipboard')"><i data-lucide="share-2" class="i16"></i> Share</button>
+  </div>
+</header>
+
+<main style="max-width:1200px;margin:0 auto;padding:24px">
+
+  <!-- ================= FOUNDATIONS ================= -->
+  <section class="ds-section active" id="ds-foundations">
+    <div class="card card-pad ds-block">
+      <p class="ds-cat">Color tokens</p>
+      <p class="ds-rule">Click any swatch to copy the hex value. Used across every page, component and state.</p>
+      <div id="colorGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px"></div>
+    </div>
+    <div class="grid grid-2 ds-block" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card card-pad">
+        <p class="ds-cat">Spacing scale (px)</p>
+        <div id="spaceList" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+      <div class="card card-pad">
+        <p class="ds-cat">Radius &amp; control heights</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px">
+          <div style="text-align:center"><div style="width:64px;height:64px;background:#eef2ff;border:1px solid var(--line-strong);border-radius:8px"></div><p class="t-caption" style="margin:6px 0 0">sm · 8</p></div>
+          <div style="text-align:center"><div style="width:64px;height:64px;background:#eef2ff;border:1px solid var(--line-strong);border-radius:10px"></div><p class="t-caption" style="margin:6px 0 0">md · 10</p></div>
+          <div style="text-align:center"><div style="width:64px;height:64px;background:#eef2ff;border:1px solid var(--line-strong);border-radius:16px"></div><p class="t-caption" style="margin:6px 0 0">lg · 16</p></div>
+          <div style="text-align:center"><div style="width:64px;height:64px;background:#eef2ff;border:1px solid var(--line-strong);border-radius:20px"></div><p class="t-caption" style="margin:6px 0 0">xl · 20</p></div>
+          <div style="text-align:center"><div style="width:64px;height:64px;background:#eef2ff;border:1px solid var(--line-strong);border-radius:99px"></div><p class="t-caption" style="margin:6px 0 0">full</p></div>
+        </div>
+        <p class="ds-label">Control heights</p>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="btn btn-ghost btn-sm">34px</span><span class="btn btn-ghost">40px</span><span class="btn btn-ghost btn-lg">48px</span>
+        </div>
+      </div>
+    </div>
+    <div class="card card-pad ds-block">
+      <p class="ds-cat">Typography — Plus Jakarta Sans, sentence case always</p>
+      <div class="type-row t-title">Title · 18px semibold — Insurance policies</div>
+      <div class="type-row t-h2">Heading · 16px bold — Recent activity</div>
+      <div class="type-row t-body">Body · 14px medium — Cody Martin opened a motor quote.</div>
+      <div class="type-row t-small">Small · 13px medium — Showing 1–8 of 24 results</div>
+      <div class="type-row t-caption" style="border:none">Caption · 12px muted — Typically replies within an hour</div>
+    </div>
+    <div class="card card-pad ds-block">
+      <p class="ds-cat">Iconography</p>
+      <p class="ds-rule">One icon per concept. Hover recolors — never new borders.</p>
+      <div id="iconGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px"></div>
+    </div>
+    <div class="card card-pad ds-block">
+      <p class="ds-cat">Motion — vertical only, click a box to replay</p>
+      <p class="ds-rule">Entrances rise from the bottom (<code class="k">fadeUp</code>), cards pop (<code class="k">pop</code>), overlays fade (<code class="k">fadeIn</code>). No sideways motion, no entrance rotation.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+        <div class="motion-box" data-motion="fadeUp .6s cubic-bezier(.22,1,.36,1) both">fadeUp</div>
+        <div class="motion-box" data-motion="pop .35s cubic-bezier(.22,1,.36,1) both">pop</div>
+        <div class="motion-box" data-motion="fadeIn .4s both">fadeIn</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ATOMS ================= -->
+  <section class="ds-section" id="ds-atoms">
+    <div class="card card-pad ds-block">
+      <p class="ds-cat">Buttons — flat by default, glow on hover only</p>
+      <p class="ds-rule">Variants: <code class="k">btn-primary</code> <code class="k">btn-sapphire</code> <code class="k">btn-outline</code> <code class="k">btn-ghost</code> <code class="k">btn-danger-ghost</code> · Sizes: <code class="k">btn-sm</code> <code class="k">btn-md</code> <code class="k">btn-lg</code> · States: default, hover, active, disabled, loading</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <button class="btn btn-primary" onclick="demoLoad(this)">Primary</button>
+        <button class="btn btn-sapphire">Sapphire</button>
+        <button class="btn btn-outline">Outline</button>
+        <button class="btn btn-ghost">Ghost</button>
+        <button class="btn btn-danger-ghost">Danger</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-primary btn-sm">Small 34</button>
+        <button class="btn btn-primary">Medium 40</button>
+        <button class="btn btn-primary btn-lg">Large 48</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+        <button class="icon-btn bordered"><i data-lucide="plus" class="i20"></i></button>
+      </div>
+    </div>
+    <div class="grid grid-2 ds-block" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card card-pad">
+        <p class="ds-cat">Fields — 44px, 10px radius, accent focus ring</p>
+        <label class="field-label">Full name</label>
+        <input class="input" placeholder="e.g. Cody Martin" style="margin-bottom:12px" />
+        <label class="field-label">Notes</label>
+        <textarea class="textarea" rows="2" placeholder="Brief description..."></textarea>
+      </div>
+      <div class="card card-pad">
+        <p class="ds-cat">Pills, badges, toggles, avatars</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+          <span class="pill pill-quote"><i data-lucide="file-text" class="i14"></i>Quote</span>
+          <span class="pill pill-policy"><i data-lucide="check" class="i14"></i>Resolved</span>
+          <span class="pill pill-lead"><i data-lucide="sparkles" class="i14"></i>Lead</span>
+          <span class="pill pill-channel"><i data-lucide="globe" class="i14"></i>Website</span>
+          <span class="pill pill-warn"><i data-lucide="star" class="i14"></i>Important</span>
+          <span class="pill pill-grey">Ended</span>
+          <span class="count-badge">8</span>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <span class="avatar" style="background:rgba(0,145,255,.12);color:#0063b8;width:44px;height:44px">CM</span>
+          <span class="avatar" style="background:rgba(0,200,151,.15);color:#00755a;width:44px;height:44px">GW</span>
+          <span class="avatar" style="background:rgba(124,58,237,.12);color:#5b21b6;width:44px;height:44px">LW</span>
+          <button class="toggle on" onclick="this.classList.toggle('on')" role="switch"></button>
+          <button class="toggle" onclick="this.classList.toggle('on')" role="switch"></button>
+        </div>
+      </div>
+    </div>
+    <div class="card card-pad ds-block">
+      <p class="ds-cat">Accent swatches — selected fills solid, never a faint box</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="dsSwatches"></div>
+    </div>
+  </section>
+
+  <!-- ================= MOLECULES ================= -->
+  <section class="ds-section" id="ds-molecules">
+    <div class="card card-pad ds-block">
+      <p class="ds-cat">Search box + filter chips + recent pills</p>
+      <div class="search-box" style="max-width:520px;margin-bottom:12px"><i data-lucide="search" class="i18" style="color:#8a8d9f"></i><input placeholder="Search by ID number, policy or quote number..." /></div>
+      <div style="display:flex;gap:4px 16px;flex-wrap:wrap">
+        <button class="chip selected"><i data-lucide="id-card" class="i16"></i> ID number</button>
+        <button class="chip" onclick="this.classList.toggle('selected')"><i data-lucide="file-text" class="i16"></i> Lead ID</button>
+        <button class="pill pill-channel"><i data-lucide="shield-check" class="i14"></i> Policy</button>
+      </div>
+    </div>
+    <div class="grid grid-2 ds-block" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div class="card card-pad">
+        <p class="ds-cat">Dropdown card — profile anatomy is the law</p>
+        <div style="position:relative">
+          <button class="btn btn-ghost" onclick="document.getElementById('dsDrop').classList.toggle('hidden')">Open dropdown</button>
+          <div id="dsDrop" class="dropdown hidden" style="left:0;top:48px">
+            <div class="dropdown-head"><span class="dropdown-avatar">TH</span><div><p class="dropdown-heading">Tal Hassal</p><p class="dropdown-sub">tal.hassal@sapphire.co</p></div></div>
+            <div class="dropdown-sep"></div>
+            <button class="dropdown-item active"><span class="dropdown-ic"><i data-lucide="building-2" class="i16"></i></span><span class="dropdown-label">Branch<small>Optional second line</small></span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <button class="dropdown-item"><span class="dropdown-ic"><i data-lucide="globe" class="i16"></i></span><span class="dropdown-label">Website</span><i data-lucide="check" class="i16 dropdown-check"></i></button>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-foot"><button class="btn btn-ghost btn-sm btn-block" onclick="document.getElementById('dsDrop').classList.add('hidden')">Done</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="card card-pad">
+        <p class="ds-cat">Tabs + pagination</p>
+        <div style="display:flex;border-bottom:1px solid var(--line);margin-bottom:14px">
+          <button class="tab-btn active" onclick="dsTabs(this)">All<span class="tab-ink"></span></button>
+          <button class="tab-btn" onclick="dsTabs(this)">Quotes<span class="count-badge">8</span><span class="tab-ink"></span></button>
+          <button class="tab-btn" onclick="dsTabs(this)">Policies<span class="tab-ink"></span></button>
+        </div>
+        <div style="display:flex;gap:8px" id="dsPager">
+          <button class="page-btn active">1</button><button class="page-btn" onclick="dsPage(this)">2</button><button class="page-btn" onclick="dsPage(this)">3</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-2 ds-block" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div>
+        <div class="stat-card" style="margin-bottom:12px"><div class="stat-ic" style="background:rgba(0,200,151,.12);color:#00916c"><i data-lucide="shield-check" class="i22"></i></div><div><p class="t-h2" style="margin:0;font-size:22px">11</p><p class="t-caption" style="margin:2px 0 0">Total policies</p></div></div>
+        <div class="bubble them" style="margin-bottom:8px">Hi, just checking on my motor quote.</div>
+        <div class="bubble me">Hi Cody, it will be ready this afternoon.</div>
+      </div>
+      <div class="card card-pad">
+        <p class="ds-cat">Notification row (actionable)</p>
+        <button class="notif-row unread" onclick="showDsToast('Notification opened (demo)')">
+          <span class="dropdown-ic" style="width:44px;height:44px"><i data-lucide="file-text" class="i20"></i></span>
+          <span style="flex:1;min-width:0"><span class="t-body" style="display:block;font-weight:700">New quote request</span><span class="t-caption" style="display:block;margin-top:4px">Loretta Wong · 12 min ago</span></span>
+          <span class="dot unread" style="margin-top:10px"></span>
+          <i data-lucide="chevron-right" class="i18 notif-go"></i>
+        </button>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button class="btn btn-primary btn-sm" onclick="showDsToast('Toast shown')">Show toast</button>
+          <button class="btn btn-sapphire btn-sm" onclick="openModal('dsModal')">Open modal</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ORGANISMS ================= -->
+  <section class="ds-section" id="ds-organisms">
+    <div class="card ds-block" style="overflow:hidden">
+      <div class="card-head"><h2 class="t-h2" style="margin:0">Activity table</h2><button class="btn btn-primary btn-sm"><i data-lucide="plus" class="i16"></i> New quote</button></div>
+      <div class="table-wrap"><table class="grid"><thead><tr><th>Type</th><th>Name</th><th>Date opened</th><th>Reference no.</th><th>Channel</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill pill-quote"><i data-lucide="file-text" class="i14"></i>Quote</span></td><td>Cody Martin</td><td>31 Jan 2025</td><td>012345678910</td><td><span class="pill pill-channel"><i data-lucide="building-2" class="i14"></i>Branch</span></td><td><button class="view-link" onclick="showDsToast('Record opened (demo)')">View <i data-lucide="arrow-right" class="i14"></i></button></td></tr>
+        <tr><td><span class="pill pill-policy"><i data-lucide="shield-check" class="i14"></i>Policy</span></td><td>Gary Wallace</td><td>31 Jan 2025</td><td>POL-2025-0041</td><td><span class="pill pill-channel"><i data-lucide="message-circle" class="i14"></i>Boomerang</span></td><td><button class="view-link" onclick="showDsToast('Record opened (demo)')">View <i data-lucide="arrow-right" class="i14"></i></button></td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="grid grid-2 ds-block" style="display:grid;grid-template-columns:86px 1fr;gap:16px;align-items:start">
+      <div class="card" style="padding:12px 10px;display:flex;flex-direction:column;gap:8px;align-items:center">
+        <p class="ds-label" style="margin:0">Sidebar</p>
+        <button class="side-item active" style="width:100%"><i data-lucide="house" class="i22"></i></button>
+        <button class="side-item" style="width:100%"><i data-lucide="files" class="i22"></i></button>
+        <button class="side-item" style="width:100%"><i data-lucide="users" class="i22"></i></button>
+      </div>
+      <div class="card card-pad">
+        <p class="ds-cat">Chat thread + reply row</p>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          <span class="avatar" style="background:rgba(0,145,255,.12);color:#0063b8;width:44px;height:44px">CM</span>
+          <div><p class="t-h2" style="margin:0;font-size:15px">Cody Martin</p><p class="t-caption" style="margin:0">Online · Cape Town</p></div>
+        </div>
+        <div class="bubble them" style="margin-bottom:8px">Thanks! When will it be ready?</div>
+        <div class="bubble me" style="margin-bottom:12px">This afternoon.</div>
+        <div style="display:flex;gap:8px"><input class="input" placeholder="Write a reply..." style="flex:1" /><button class="btn btn-primary" onclick="demoLoad(this)">Send</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TEMPLATES ================= -->
+  <section class="ds-section" id="ds-templates">
+    <p class="ds-rule">Templates compose organisms into full pages. Open each live page to inspect spacing, then return here.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px" id="templateGrid"></div>
+  </section>
+
+  <!-- ================= PAGES ================= -->
+  <section class="ds-section" id="ds-pages">
+    <p class="ds-rule">Every page in the application. Open each live page to inspect it, then return here.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px" id="pageGrid"></div>
+  </section>
+</main>
+
+<!-- demo modal + toast -->
+<div id="dsModal" class="modal-wrap" style="display:none">
+  <div class="overlay" onclick="closeModal('dsModal')"></div>
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="modal-title">Demo modal</h3><button class="icon-btn" onclick="closeModal('dsModal')"><i data-lucide="x" class="i20"></i></button></div>
+    <p class="modal-sub">Same anatomy as every modal: title, helper text, fields, footer.</p>
+    <label class="field-label">Full name</label>
+    <input class="input" placeholder="e.g. Cody Martin" />
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('dsModal')">Cancel</button><button class="btn btn-primary" onclick="demoLoad(this);setTimeout(()=>closeModal('dsModal'),900)">Save changes</button></div>
+  </div>
+</div>
+<div id="toasts"><div class="toast" id="dsToast" style="display:none"></div></div>
+
+<script>
+  lucide.createIcons();
+  function refreshIcons(){ lucide.createIcons(); }
+  // tabs
+  document.querySelectorAll('[data-dstab]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-dstab]').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.ds-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('ds-' + b.dataset.dstab).classList.add('active');
+    refreshIcons(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  }));
+  // foundations data
+  const COLORS = [['Sapphire','#0033aa',1],['Accent','#0091ff',1],['Mint','#00c897',1],['Violet','#7c3aed',1],['Amber','#f59e0b',1],['Ink','#1a1d2c',1],['Muted','#4e5468',0],['Faint','#8a8d9f',0],['Line strong','#e5e7eb',0],['Danger','#ef4444',1]];
+  document.getElementById('colorGrid').innerHTML = COLORS.map(([n,h]) =>
+    '<button class="swatch-card" onclick="copyHex(\'' + h + '\')"><span style="display:block;height:64px;background:' + h + '"></span><span style="display:block;padding:10px 12px"><span class="t-body" style="display:block;font-weight:700">' + n + '</span><span class="t-caption">' + h + '</span></span></button>').join('');
+  document.getElementById('spaceList').innerHTML = [4,8,12,16,20,24,28].map(s =>
+    '<div style="display:flex;align-items:center;gap:12px"><span class="t-caption" style="width:44px">' + s + 'px</span><span class="space-bar" style="width:' + (s * 6) + 'px"></span></div>').join('');
+  const ICONS = ['house','files','users','message-square-text','settings','bell','circle-help','palette','search','filter','sliders-horizontal','plus','x','check','check-check','chevron-down','chevron-right','arrow-right','arrow-up-down','file-text','file-plus-2','shield-check','sparkles','id-card','calendar-days','globe','building-2','handshake','message-circle','database','thumbs-up','star','phone','video','phone-off','smile','paperclip','send-horizontal','map-pin','bell-ring','share-2','pen-line','log-out','user-round','briefcase','wallet','folder-open','layout-dashboard','layout-grid','list-checks'];
+  document.getElementById('iconGrid').innerHTML = ICONS.map(n =>
+    '<div class="icon-cell"><i data-lucide="' + n + '" class="i20"></i>' + n + '</div>').join('');
+  document.getElementById('dsSwatches').innerHTML = [['Sky','#0091ff'],['Sapphire','#0033aa'],['Mint','#00c897'],['Violet','#7c3aed']].map(([n,v],i) =>
+    '<button class="swatch' + (i === 0 ? ' selected' : '') + '" style="--c:' + v + '" onclick="dsTheme(this,\'' + v + '\')"><span class="swatch-dot"><i data-lucide="check" class="i16 swatch-check"></i></span>' + n + '</button>').join('');
+  const TEMPLATES = [
+    ['Dashboard','Quick search + recent activity table','/','layout-dashboard'],
+    ['Policies','Stat cards + policy table','/#\/policies','shield-check'],
+    ['Clients','Searchable client card grid','/#\/clients','users'],
+    ['Messages','Live chat portal with resolve flow','/#\/messages','message-square-text'],
+    ['Settings','Profile, toggles, accent themes','/#\/settings','settings'],
+    ['Notifications','Grouped actionable rows','/#\/notifications','bell'],
+  ];
+  document.getElementById('templateGrid').innerHTML = TEMPLATES.map(([n,d,l,ic]) =>
+    '<div class="card card-pad"><div style="display:flex;gap:8px;margin-bottom:14px"><span class="wire" style="flex:1;height:52px;background:#eef2ff"></span><span class="wire" style="flex:2;height:52px;background:#e4e9f4"></span></div>'
+    + '<div style="display:flex;gap:10px;align-items:center;margin-bottom:6px"><span class="dropdown-ic"><i data-lucide="' + ic + '" class="i16"></i></span><p class="ds-card-name">' + n + '</p></div>'
+    + '<p class="ds-card-desc">' + d + '</p>'
+    + '<a class="btn btn-ghost btn-sm btn-block" style="text-decoration:none" href="' + l + '">Open live page</a></div>').join('');
+  const PAGES = [
+    ['Login','Sign in with agent number or email','/accounts/','log-in'],
+    ['Forgot password','Admin-handled reset with progress bar','/accounts/forgot/','key-round'],
+    ['Sign out','Session ended confirmation','/accounts/signed-out/','log-out'],
+    ['Design system','Living storybook of every component','/design-system/','palette'],
+  ];
+  document.getElementById('pageGrid').innerHTML = PAGES.map(([n,d,l,ic]) =>
+    '<div class="card card-pad"><div style="display:flex;gap:10px;align-items:center;margin-bottom:6px"><span class="dropdown-ic"><i data-lucide="' + ic + '" class="i16"></i></span><p class="ds-card-name">' + n + '</p></div>'
+    + '<p class="ds-card-desc">' + d + '</p>'
+    + '<a class="btn btn-ghost btn-sm btn-block" style="text-decoration:none" href="' + l + '">Open live page</a></div>').join('');
+  refreshIcons();
+  // interactions
+  function copyHex(h){ navigator.clipboard && navigator.clipboard.writeText(h); document.getElementById('dsToast').textContent = h + ' copied'; showDsToast(); }
+  function showDsToast(){ const t = document.getElementById('dsToast'); t.style.display = 'flex'; refreshIcons(); clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2200); }
+  function dsTabs(btn){ btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  function dsPage(btn){ btn.parentElement.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  function demoLoad(btn){
+    if (btn.classList.contains('loading')) return;
+    const orig = btn.innerHTML;
+    btn.classList.add('loading'); btn.disabled = true;
+    btn.innerHTML = '<span class="btn-spinner"></span><span>Loading</span>';
+    setTimeout(() => { btn.classList.remove('loading'); btn.disabled = false; btn.innerHTML = orig; refreshIcons(); }, 1200);
+  }
+  function dsTheme(btn, v){
+    document.querySelectorAll('#dsSwatches .swatch').forEach(s => s.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.documentElement.style.setProperty('--accent', v);
+    showDsToast(); document.getElementById('dsToast').textContent = 'Accent preview: ' + v;
+  }
+  document.querySelectorAll('.motion-box').forEach(b => b.addEventListener('click', () => { b.style.animation = 'none'; void b.offsetWidth; b.style.animation = b.dataset.motion; }));
+  function openModal(id){ const el = document.getElementById(id); el.style.display = 'flex'; }
+  function closeModal(id){ document.getElementById(id).style.display = 'none'; }
+  document.addEventListener('click', e => { if (!e.target.closest('#dsDrop') && !e.target.closest('[onclick*="dsDrop"]')) document.getElementById('dsDrop').classList.add('hidden'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal('dsModal'); });
+</script>
+</body>
+</html>

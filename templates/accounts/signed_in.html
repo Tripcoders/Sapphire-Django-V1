@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Sapphire — signed in{% endblock %}
+{% block body %}
+<div class="split">
+  <aside class="brand slim">
+    <img class="sb-logo" src="{% static 'img/logo-standard-bank.png' %}" alt="Standard Bank" />
+    <div class="brand-copy"><p class="brand-title">Internal tools</p></div>
+  </aside>
+  <main class="panel">
+    <div class="card form-card stagger" style="text-align:center">
+      <span class="avatar" style="width:64px;height:64px;font-size:22px;margin:0 auto 14px">{{ user.username|slice:":1"|upper }}</span>
+      <h1 class="t-h2" style="margin:0">Signed in</h1>
+      <p class="t-small" style="color:var(--muted);margin:6px 0 20px">You are in as {{ user.username }}.</p>
+      <form method="post" action="{% url 'accounts:signed-out' %}">
+        {% csrf_token %}
+        <button class="btn btn-ghost btn-block" type="submit">Sign out</button>
+      </form>
+    </div>
+  </main>
+</div>
+{% endblock %}

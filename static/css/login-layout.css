@@ -1,0 +1,19 @@
+/* Login layout — approved Sapphire "access account" arrangement.
+   Snapshot of the Design Mode session of 2026-09-28 (curated to the 16 safe
+   style edits out of 21; DOM moves and the form-logo drag offsets were
+   excluded — see note at the bottom).
+   Loaded AFTER login.css in base.html, so on equal specificity these rules win.
+   If the login page breaks, keep this file linked: it re-pins the approved
+   layout regardless of what changes in login.css. */
+.brand.hero .sb-logo{ left:50px; }
+.seam{ left:100px; top:450px; width:485px; height:553px; }
+.seam-circle{ left:855px; top:-24px; width:600px; height:600px; }
+.seam-pig-wrap{ left:73px; top:-7px; }
+.seam-pig{ position:relative; left:509px; top:87px; width:465.625px; height:815.344px; }
+
+/* Excluded on purpose: img.form-logo offsets (961px/-786px, coupled to an
+   invalid drag of the logo out of the panel into <html>), html
+   position:relative (no effect), sb-logo top:32px (already the value),
+   and all three DOM moves (pig is already nested correctly; moving sb-logo
+   out of the brand panel breaks grouping/mobile; moving form-logo to <html>
+   is invalid HTML). */

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="split">
+  <!-- Brand panel (Figma left, 576/1440) -->
+  <aside class="brand hero">
+    <div class="brand-copy stagger" style="margin-top:-40px">
+      <p class="brand-title">Agent tools</p>
+      <p class="brand-sub">Because our customers deserve the best</p>
+    </div>
+  </aside>
+  <!-- Seam artwork: scaled white circle behind the pig, cut across the split -->
+  <div class="seam" aria-hidden="true">
+    <div class="seam-circle"></div>
+    <div class="seam-pig-wrap"><img class="seam-pig" src="{% static 'img/pig-mascot.svg' %}" alt="" /></div>
+  </div>
+
+  <!-- Sign-in panel -->
+  <main class="panel">
+    <img class="form-logo" src="{% static 'img/sapphire-horiz-logo.svg' %}" alt="Sapphire" />
+    <div class="card form-card stagger">
+      <h1 class="t-h2 form-title">Access account.</h1>
+      <p class="t-small form-sub">Welcome to Sapphire, a way to make insurance a breeze for consultants.</p>
+      <form method="post" action="{% url 'accounts:login' %}" id="loginForm" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="form-error" role="alert"><i data-lucide="alert-circle" class="i16"></i><span>{{ form.non_field_errors.0 }}</span></div>
+        {% endif %}
+        <label class="field-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        <div class="field-wrap">
+          {{ form.username }}
+          <button type="button" class="field-ic" id="userInfo" title="Use your Standard Bank C number or your SB email address"><i data-lucide="info" class="i18"></i></button>
+        </div>
+        {% if form.username.errors %}<p class="field-error">{{ form.username.errors.0 }}</p>{% endif %}
+
+        <label class="field-label" for="id_password" style="margin-top:14px">Password</label>
+        <div class="field-wrap">
+          {{ form.password }}
+          <button type="button" class="field-ic" id="togglePw" title="Show password"><i data-lucide="eye" class="i18"></i></button>
+        </div>
+        {% if form.password.errors %}<p class="field-error">{{ form.password.errors.0 }}</p>{% endif %}
+        <p class="caps-hint hidden" id="capsHint"><i data-lucide="triangle-alert" class="i14"></i> Caps lock is on</p>
+
+        <div class="form-row">
+          <label class="remember">{{ form.remember }}<span>Remember me</span></label>
+          <a class="view-link" href="{% url 'accounts:forgot-password' %}">Forgot password?</a>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" id="signInBtn">Sign in</button>
+      </form>
+    </div>
+    <div class="foot stagger">
+      <p class="foot-title">Sapphire version 2.0</p>
+      <p class="t-caption">Sapphire is an internal product of the Liberty.co Insurance Collective group</p>
+    </div>
+  </main>
+</div>
+{% endblock %}

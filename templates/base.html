@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{% block title %}Sapphire — access account{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}?v=4">
+<link rel="stylesheet" href="{% static 'css/login-layout.css' %}?v=1">
+</head>
+<body>
+{% block body %}{% endblock %}
+<div id="toasts">
+  {% for message in messages %}
+  <div class="toast" data-toast>{{ message }}</div>
+  {% endfor %}
+</div>
+<script src="{% static 'js/login.js' %}"></script>
+{% block extra_js %}{% endblock %}
+<script>lucide.createIcons();</script>
+</body>
+</html>

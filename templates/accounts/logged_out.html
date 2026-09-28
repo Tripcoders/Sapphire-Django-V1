@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Sapphire — signed out{% endblock %}
+{% block body %}
+<div class="split">
+  <aside class="brand slim">
+    <img class="sb-logo" src="{% static 'img/logo-standard-bank.png' %}" alt="Standard Bank" />
+    <div class="brand-copy"><p class="brand-title">Internal tools</p></div>
+  </aside>
+  <main class="panel">
+    <div class="card form-card stagger" style="text-align:center">
+      <h1 class="t-h2" style="margin:0">Signed out</h1>
+      <p class="t-small" style="color:var(--muted);margin:6px 0 20px">Your session has ended.</p>
+      <a class="btn btn-primary btn-block" style="text-decoration:none" href="{% url 'accounts:login' %}">Sign back in</a>
+    </div>
+  </main>
+</div>
+{% endblock %}
