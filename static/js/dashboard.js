@@ -643,7 +643,7 @@ function submitClaim(btn){
     toast('Claim opened for ' + name);
   }, 'Opening');
 }
-function signOut(){ closeModal('signoutModal'); toast('Signed out (demo session)'); }
+function signOut(){ closeModal('signoutModal'); const f = document.getElementById('signoutForm'); if (f) { f.submit(); } }
 function openDetail(id, list){
   const pool = list === 'policies' ? policyState.cache : list === 'clients' ? clientsCache.flatMap(c => c.records || []) : state.cache;
   const r = pool.find(x => x.id === id);

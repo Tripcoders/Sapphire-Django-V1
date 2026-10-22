@@ -462,6 +462,8 @@ tailwind.config = { theme: { extend: {
     <p class="modal-sub">You will need to sign back in to access the dashboard.</p>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('signoutModal')">Stay signed in</button><button class="btn btn-danger-ghost" onclick="signOut()">Sign out</button></div>
   </div>
+  {# Real logout: posts the CSRF token to Django's LogoutView, which redirects to the login page #}
+  <form id="signoutForm" method="post" action="{% url 'logout' %}" style="display:none">{% csrf_token %}</form>
 </div>
 
 <!-- ===== Modal: Agent chat ===== -->

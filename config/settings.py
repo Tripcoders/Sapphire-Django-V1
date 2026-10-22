@@ -1,10 +1,17 @@
 """Project settings. Dev defaults only — stand-alone review build, not merged."""
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-review-only-change-before-merge"
-DEBUG = True
+# Env vars are unset locally, so DEBUG stays True and the dev secret applies;
+# on PythonAnywhere the WSGI file sets DJANGO_DEBUG=0 and a real SECRET_KEY.
+_DEBUG = os.environ.get("DJANGO_DEBUG", "1") != "0"
+
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY", "django-insecure-review-only-change-before-merge"
+)
+DEBUG = _DEBUG
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
@@ -62,6 +69,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "no-reply@sapphire.co"
