@@ -2,3 +2,4 @@
 tzdata
 
 Gunicorn==23.0.0
+whitenoise==6.8.2

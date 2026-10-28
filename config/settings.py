@@ -1,4 +1,4 @@
-"""Project settings. Dev defaults only — stand-alone review build, not merged."""
+﻿"""Project settings. Dev defaults only â€” stand-alone review build, not merged."""
 import os
 from pathlib import Path
 
@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     "dashboard",
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE = [\n    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -69,7 +69,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles"\nSTATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "no-reply@sapphire.co"
@@ -77,3 +77,5 @@ DEFAULT_FROM_EMAIL = "no-reply@sapphire.co"
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "dashboard:index"
 LOGOUT_REDIRECT_URL = "accounts:login"
+
+
