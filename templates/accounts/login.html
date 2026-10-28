@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load static %}
 {% block body %}
 <div class="split">
@@ -20,7 +20,20 @@
     <img class="form-logo" src="{% static 'img/sapphire-horiz-logo.svg' %}" alt="Sapphire" />
     <div class="card form-card stagger">
       <h1 class="t-h2 form-title">Access account.</h1>
-      <p class="t-small form-sub">Welcome to Sapphire, a way to make insurance a breeze for consultants.</p>
+      <p class="t-small form-sub">Welcome to Sapphire, a way to make insurance a breeze for consultants.</p>      <!-- Demo Credentials -->
+      <div class="demo-credentials" style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+        <p style="margin: 0 0 8px 0; font-weight: 600; color: #0369a1;">Demo Login Credentials</p>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+          <span style="font-size: 14px; color: #475569;">Username:</span>
+          <code style="background: #e0f2fe; padding: 2px 8px; border-radius: 4px; font-size: 14px; cursor: pointer;" onclick="copyToClipboard('agent')" title="Click to copy">agent</code>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 14px; color: #475569;">Password:</span>
+          <code style="background: #e0f2fe; padding: 2px 8px; border-radius: 4px; font-size: 14px; cursor: pointer;" onclick="copyToClipboard('Sapphire2025!')" title="Click to copy">Sapphire2025!</code>
+        </div>
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #64748b;">Click credentials to copy. Use these to access the agent portal.</p>
+      </div>
+
       <form method="post" action="{% url 'accounts:login' %}" id="loginForm" novalidate>
         {% csrf_token %}
         {% if form.non_field_errors %}
@@ -54,4 +67,19 @@
     </div>
   </main>
 </div>
-{% endblock %}
+<script>
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(function() {
+    // Show feedback
+    const toast = document.createElement('div');
+    toast.textContent = 'Copied: ' + text;
+    toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 10px 20px; border-radius: 8px; z-index: 9999; font-size: 14px;';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  }).catch(function(err) {
+    console.error('Failed to copy: ', err);
+  });
+}
+</script>
+
+
