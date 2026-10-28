@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% block body %}
 <div class="split">
@@ -20,13 +20,7 @@
     <img class="form-logo" src="{% static 'img/sapphire-horiz-logo.svg' %}" alt="Sapphire" />
     <div class="card form-card stagger">
       <h1 class="t-h2 form-title">Access account.</h1>
-      <p class="t-small form-sub">Welcome to Sapphire, a way to make insurance a breeze for consultants.</p>        <div style="display: flex; gap: 8px; align-items: center;">
-          <span style="font-size: 14px; color: #475569;">Password:</span>
-          <code style="background: #e0f2fe; padding: 2px 8px; border-radius: 4px; font-size: 14px; cursor: pointer;" onclick="copyToClipboard('Sapphire2025!')" title="Click to copy">Sapphire2025!</code>
-        </div>
-        <p style="margin: 8px 0 0 0; font-size: 12px; color: #64748b;">Click credentials to copy. Use these to access the agent portal.</p>
-      </div>
-
+      <p class="t-small form-sub">Welcome to Sapphire, a way to make insurance a breeze for consultants.</p>
       <form method="post" action="{% url 'accounts:login' %}" id="loginForm" novalidate>
         {% csrf_token %}
         {% if form.non_field_errors %}
@@ -60,74 +54,4 @@
     </div>
   </main>
 </div>
-<script>
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(function() {
-    // Show feedback
-    const toast = document.createElement('div');
-    toast.textContent = 'Copied: ' + text;
-    toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 10px 20px; border-radius: 8px; z-index: 9999; font-size: 14px;';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-  }).catch(function(err) {
-    console.error('Failed to copy: ', err);
-  });
-}
-</script>
-  <!-- Floating Action Button for Login Details -->
-  <button type="button" id="loginDetailsFab" onclick="showLoginDetails()" 
-    style="position: fixed; bottom: 20px; right: 20px; background: #0ea5e9; color: white; border: none; border-radius: 50px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9998; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;"
-    onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-    <i data-lucide="key" style="width: 18px; height: 18px;"></i>
-    <span>Login details</span>
-  </button>
-
-  <!-- Modal for Login Details -->
-  <div id="loginDetailsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: white; border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h3 style="margin: 0; font-size: 18px; color: #0369a1;">Demo Login Credentials</h3>
-        <button type="button" onclick="hideLoginDetails()" style="background: none; border: none; cursor: pointer; font-size: 24px; color: #64748b;">&times;</button>
-      </div>
-      <div style="margin-bottom: 12px;">
-        <label style="font-size: 13px; color: #475569; display: block; margin-bottom: 4px;">Username</label>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <code style="flex: 1; background: #f1f5f9; padding: 8px 12px; border-radius: 6px; font-size: 14px;">agent</code>
-          <button type="button" onclick="copyToClipboard('agent')" style="background: #0ea5e9; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 13px;">Copy</button>
-        </div>
-      </div>
-      <div style="margin-bottom: 16px;">
-        <label style="font-size: 13px; color: #475569; display: block; margin-bottom: 4px;">Password</label>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <code style="flex: 1; background: #f1f5f9; padding: 8px 12px; border-radius: 6px; font-size: 14px;">Sapphire2025!</code>
-          <button type="button" onclick="copyToClipboard('Sapphire2025!')" style="background: #0ea5e9; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 13px;">Copy</button>
-        </div>
-      </div>
-      <p style="font-size: 12px; color: #64748b; margin: 0;">Use these credentials to access the agent portal. Click outside to close.</p>
-    </div>
-  </div>
-
-  <script>
-  function showLoginDetails() {
-    document.getElementById('loginDetailsModal').style.display = 'flex';
-  }
-  function hideLoginDetails() {
-    document.getElementById('loginDetailsModal').style.display = 'none';
-  }
-  document.getElementById('loginDetailsModal').addEventListener('click', function(e) {
-    if (e.target === this) hideLoginDetails();
-  });
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(function() {
-      const toast = document.createElement('div');
-      toast.textContent = 'Copied: ' + text;
-      toast.style.cssText = 'position: fixed; bottom: 80px; right: 20px; background: #10b981; color: white; padding: 10px 20px; border-radius: 8px; z-index: 10000; font-size: 14px;';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }).catch(function(err) {
-      console.error('Failed to copy: ', err);
-    });
-  }
-  </script>
 {% endblock %}
-
