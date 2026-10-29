@@ -1,4 +1,4 @@
-﻿# WSGI file for PythonAnywhere
+# WSGI file for PythonAnywhere
 import os
 import sys
 
