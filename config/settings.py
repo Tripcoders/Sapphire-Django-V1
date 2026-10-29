@@ -1,4 +1,4 @@
-﻿"""Project settings. Dev defaults only â€” stand-alone review build, not merged."""
+"""Project settings. Dev defaults only â€” stand-alone review build, not merged."""
 import os
 from pathlib import Path
 
@@ -6,7 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Env vars are unset locally, so DEBUG stays True and the dev secret applies;
 # on PythonAnywhere the WSGI file sets DJANGO_DEBUG=0 and a real SECRET_KEY.
-_DEBUG = os.environ.get("DJANGO_DEBUG", "1") != "0"`n_DEBUG = _DEBUG and not os.environ.get("RENDER")
+_DEBUG = os.environ.get("DJANGO_DEBUG", "1") != "0"
+_DEBUG = _DEBUG and not os.environ.get("RENDER")
 
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", "django-insecure-review-only-change-before-merge"
