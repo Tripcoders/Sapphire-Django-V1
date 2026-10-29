@@ -1,4 +1,4 @@
-﻿from django.apps import AppConfig
+from django.apps import AppConfig
 from django.db import connection
 from django.db.utils import OperationalError
 import os
