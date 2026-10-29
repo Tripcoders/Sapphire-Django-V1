@@ -1,4 +1,4 @@
-﻿"""Project settings. Dev defaults only Ã¢â‚¬â€ stand-alone review build, not merged."""
+"""Project settings. Dev defaults only Ã¢â‚¬â€ stand-alone review build, not merged."""
 import os
 from pathlib import Path
 
@@ -71,8 +71,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
+STATIC_ROOT = BASE_DIR / "staticfiles"`nSTORAGES = {`n    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},`n    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},`n}`n
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "no-reply@sapphire.co"
