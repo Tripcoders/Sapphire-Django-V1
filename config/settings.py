@@ -81,3 +81,10 @@ LOGIN_REDIRECT_URL = "dashboard:index"
 LOGOUT_REDIRECT_URL = "accounts:login"
 
 
+
+# Render-specific settings
+import os
+
+# Ensure DEBUG is False in production
+if os.environ.get('RENDER'):
+    DEBUG = False
