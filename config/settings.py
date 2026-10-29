@@ -1,4 +1,4 @@
-﻿"""Project settings. Dev defaults only ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â stand-alone review build, not merged."""
+"""Project settings. Dev defaults only - stand-alone review build, not merged."""
 import os
 from pathlib import Path
 
